@@ -1,4 +1,4 @@
-name: Update Codebeamer on PR Merge
+name: Test Codebeamer Status Update
 
 on:
   workflow_dispatch:
@@ -8,28 +8,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set test values
-        run: |
-          echo "CB_ID=1025537" >> $GITHUB_ENV
-          echo "STATUS_ID=4" >> $GITHUB_ENV
-          echo "STATUS_NAME=PR Merged" >> $GITHUB_ENV
-
-      - name: Show test values
-        run: |
-          echo "CB_ID=$CB_ID"
-          echo "STATUS_ID=$STATUS_ID"
-          echo "STATUS_NAME=$STATUS_NAME"
-
-      - name: Update Codebeamer
+      - name: Update Work Item 1025537
         run: |
           curl -v \
             -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
             -X PATCH \
             -H "Content-Type: application/json" \
-            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/${CB_ID}/fields" \
-            -d "{
-              \"status\": {
-                \"id\": ${STATUS_ID},
-                \"name\": \"${STATUS_NAME}\"
+            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
+            -d '{
+              "status": {
+                "id": 4,
+                "name": "PR Merged"
               }
-            }"
+            }'
