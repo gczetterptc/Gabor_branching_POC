@@ -8,14 +8,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Update Work Item 1025537
+    - name: Test PUT
       run: |
         curl -v \
           -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
-          -X PATCH \
+          -X PUT \
           -H "Content-Type: application/json" \
           "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
           -d '{
+            "id": 1025537,
             "status": {
               "id": 4,
               "name": "PR Merged",
