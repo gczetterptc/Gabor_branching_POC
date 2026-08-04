@@ -13,7 +13,7 @@ jobs:
           curl -sS \
             -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
             -H "Accept: application/json" \
-            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
+            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025637" \
             > item.json
 
       - name: Update status and remove field 10000
