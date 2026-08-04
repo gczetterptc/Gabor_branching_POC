@@ -8,18 +8,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Test PUT
-      run: |
-        curl -v \
-          -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
-          -X PUT \
-          -H "Content-Type: application/json" \
-          "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
-          -d '{
-            "id": 1025537,
-            "status": {
+      - name: Get item
+        run: |
+          curl -s \
+            -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
+            -H "Accept: application/json" \
+            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
+            > item.json
+
+          cat item.json
+
+      - name: Update status
+        run: |
+          jq '
+            .status = {
               "id": 4,
               "name": "PR Merged",
               "type": "ChoiceOptionReference"
             }
-          }'
+          ' item.json > updated.json
+
+          cat updated.json
+
+      - name: PUT updated item
+        run: |
+          curl -v \
+            -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
+            -X PUT \
+            -H "Content-Type: application/json" \
+            --data @updated.json \
+            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537"
