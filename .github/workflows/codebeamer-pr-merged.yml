@@ -39,4 +39,4 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Accept: application/json" \
             --data @updated.json \
-            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537"
+            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025637"
