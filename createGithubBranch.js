@@ -2,7 +2,7 @@
 var owner = "gczetterptc";
 var repo = "Gabor_branching_POC";
 var baseBranch = "main";
-var token = ""
+var token = "in_codebeamer"
 
 // JUST DMEO
 var CUSTOM_FIELDS = {
@@ -11,6 +11,17 @@ var CUSTOM_FIELDS = {
     branchName: 3.0,
     branchUrl: 7.0
 };
+
+// GETTING TOKEN FROM CONFIG WORKITEM
+var tokenItemId = 1025407; // replace with your token item ID
+var trackerItemManager = applicationContext.getBean("trackerItemManager");
+var tokenItem = trackerItemManager.findById(new java.lang.Integer(tokenItemId));
+if (tokenItem == null) {
+    throw "Token item not found: " + tokenItemId;
+}
+token = tokenItem.getDescription();
+// ===================== //
+
 
 // ==================== //
 
