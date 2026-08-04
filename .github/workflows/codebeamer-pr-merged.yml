@@ -8,33 +8,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get item
+      - name: GET Codebeamer item
         run: |
-          curl -s \
+          curl -sS \
             -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
             -H "Accept: application/json" \
             "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
-            > item.json
+            -o item.json
 
+          echo "Original item:"
           cat item.json
+          echo ""
 
-      - name: Update status
+      - name: Build clean update payload
         run: |
-          jq '
-            .status = {
-              "id": 4,
-              "name": "PR Merged",
-              "type": "ChoiceOptionReference"
-            }
-          ' item.json > updated.json
+          jq '{
+            id: .id,
+            name: .name,
+            description: .description,
+            descriptionFormat: .descriptionFormat,
+            version: .version,
+            tracker: .tracker,
+            priority: .priority,
+            status: {
+              id: 4,
+              name: "PR Merged",
+              type: "ChoiceOptionReference"
+            },
+            assignedTo: .assignedTo,
+            categories: .categories,
+            subjects: .subjects,
+            resolutions: .resolutions,
+            severities: .severities,
+            teams: .teams,
+            versions: .versions,
+            startDate: .startDate,
+            ordinal: .ordinal,
+            typeName: .typeName
+          }' item.json > updated.json
 
+          echo "Updated payload:"
           cat updated.json
+          echo ""
 
-      - name: PUT updated item
+      - name: PUT updated Codebeamer item
         run: |
           curl -v \
             -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
             -X PUT \
             -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
             --data @updated.json \
             "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537"
