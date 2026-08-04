@@ -12,12 +12,6 @@ jobs:
         run: |
           curl -v \
             -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
-            -X PATCH \
+            -X GET \
             -H "Content-Type: application/json" \
             "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
-            -d '{
-              "status": {
-                "id": 4,
-                "name": "PR Merged"
-              }
-            }'
