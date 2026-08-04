@@ -8,10 +8,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Update Work Item 1025537
-        run: |
-          curl -v \
-            -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
-            -X GET \
-            -H "Content-Type: application/json" \
-            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
+    - name: Update Work Item 1025537
+      run: |
+        curl -v \
+          -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
+          -X PATCH \
+          -H "Content-Type: application/json" \
+          "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025537" \
+          -d '{
+            "status": {
+              "id": 4,
+              "name": "PR Merged",
+              "type": "ChoiceOptionReference"
+            }
+          }'
