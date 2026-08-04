@@ -2,45 +2,34 @@ name: Update Codebeamer on PR Merge
 
 on:
   workflow_dispatch:
-  pull_request:
-    types:
-      - closed
 
 jobs:
   update-codebeamer:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
-      - name: Extract Codebeamer ID
+      - name: Set test values
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            BRANCH="feature/cb-1025537-test"
-          else
-            BRANCH="${{ github.event.pull_request.head.ref }}"
-          fi
+          echo "CB_ID=1025537" >> $GITHUB_ENV
+          echo "STATUS_ID=4" >> $GITHUB_ENV
+          echo "STATUS_NAME=PR Merged" >> $GITHUB_ENV
 
-          echo "Branch: $BRANCH"
-
-          if [[ $BRANCH =~ cb-([0-9]+) ]]; then
-            echo "CB_ID=${BASH_REMATCH[1]}" >> $GITHUB_ENV
-            echo "Found Codebeamer ID: ${BASH_REMATCH[1]}"
-          else
-            echo "No Codebeamer item ID found"
-            exit 1
-          fi
-
-      - name: Set Status to PR Merged
+      - name: Show test values
         run: |
-          echo "Updating item ${CB_ID}"
+          echo "CB_ID=$CB_ID"
+          echo "STATUS_ID=$STATUS_ID"
+          echo "STATUS_NAME=$STATUS_NAME"
 
+      - name: Update Codebeamer
+        run: |
           curl -v \
             -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
             -X PATCH \
             -H "Content-Type: application/json" \
             "${{ secrets.CODEBEAMER_URL }}/api/v3/items/${CB_ID}/fields" \
-            -d '{
-              "status": {
-                "id": 4
+            -d "{
+              \"status\": {
+                \"id\": ${STATUS_ID},
+                \"name\": \"${STATUS_NAME}\"
               }
-            }'
+            }"
