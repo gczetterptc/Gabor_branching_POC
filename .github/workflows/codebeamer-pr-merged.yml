@@ -1,19 +1,36 @@
-name: Update Codebeamer Status
+name: Update Codebeamer on PR Merge
 
 on:
-  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
 
 jobs:
   update-codebeamer:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
+      - name: Extract Codebeamer ID from merged branch
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+
+          echo "Merged branch: $BRANCH"
+
+          if [[ $BRANCH =~ cb-([0-9]+) ]]; then
+            echo "CB_ID=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            echo "Found Codebeamer ID: ${BASH_REMATCH[1]}"
+          else
+            echo "No Codebeamer ID found in branch name"
+            exit 1
+          fi
+
       - name: Get item from Codebeamer
         run: |
           curl -sS \
             -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
             -H "Accept: application/json" \
-            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025637" \
+            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/${CB_ID}" \
             > item.json
 
       - name: Update status and remove field 10000
@@ -28,8 +45,7 @@ jobs:
             }
           ' item.json > updated.json
 
-          echo "Updated payload:"
-          cat updated.json
+          echo "Updating item ${CB_ID}"
 
       - name: Update item in Codebeamer
         run: |
@@ -39,4 +55,4 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Accept: application/json" \
             --data @updated.json \
-            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/1025637"
+            "${{ secrets.CODEBEAMER_URL }}/api/v3/items/${CB_ID}"
