@@ -12,34 +12,24 @@ jobs:
 
     steps:
       - name: Extract Codebeamer ID
-        id: extract
         run: |
           BRANCH="${{ github.event.pull_request.head.ref }}"
 
-          echo "Branch: $BRANCH"
-
           if [[ $BRANCH =~ cb-([0-9]+) ]]; then
             echo "CB_ID=${BASH_REMATCH[1]}" >> $GITHUB_ENV
-            echo "Found CB ID: ${BASH_REMATCH[1]}"
           else
-            echo "No Codebeamer ID found"
+            echo "No Codebeamer item ID found"
             exit 0
           fi
 
-      - name: Update Codebeamer
+      - name: Set Status to PR Merged
         run: |
-          curl -X PUT \
-            -H "Authorization: Bearer ${{ secrets.CODEBEAMER_TOKEN }}" \
+          curl -u "${{ secrets.CODEBEAMER_USER }}:${{ secrets.CODEBEAMER_PASSWORD }}" \
+            -X PATCH \
             -H "Content-Type: application/json" \
             "${{ secrets.CODEBEAMER_URL }}/api/v3/items/${CB_ID}/fields" \
             -d '{
-                  "fieldValues": [
-                    {
-                      "fieldId": 1001,
-                      "type": "TextFieldValue",
-                      "name": "PR Status",
-                      "value": "Merged"
-                    }
-                  ]
-                }'
-`
+                "status": {
+                  "id": 4
+                }
+              }'
