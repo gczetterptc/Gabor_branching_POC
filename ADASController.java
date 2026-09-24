@@ -33,4 +33,4 @@ public class ADASController {
         System.out.println("Speed: " + speed + " km/h");
         System.out.println("ADAS Action: " + action);
     }
-}
+}NEW Function
